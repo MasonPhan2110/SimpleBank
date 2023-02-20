@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -10,7 +11,8 @@ import (
 )
 
 func createRandomEntry(t *testing.T) Entry {
-	id := util.RandomInt(1, 15)
+	id := util.RandomInt(5, 15)
+	fmt.Println(">> ID: ", id)
 	arg := CreateEntryParams{
 		AccountID: id,
 		Amount:    util.RandomMoney(),
