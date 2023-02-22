@@ -18,12 +18,12 @@ const (
 )
 
 func TestMain(m *testing.M) {
-	var err error
 	// config, err := util.LoadConfig("../..")
 	// if err != nil {
 	// 	log.Fatal("cannot cload config: ", err)
 	// }
-	testDB, err = sql.Open(DB_DRIVER, DB_DRIVER)
+	var err error
+	testDB, err = sql.Open(DB_DRIVER, DB_SOURCE)
 	if err != nil {
 		log.Fatal("cannot connect to db: ", err)
 	}
