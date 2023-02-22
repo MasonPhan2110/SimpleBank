@@ -6,19 +6,24 @@ import (
 	"os"
 	"testing"
 
-	"github.com/MasonPhan2110/SimpleBank/util"
 	_ "github.com/lib/pq"
 )
 
 var testQueries *Queries
 var testDB *sql.DB
 
+const (
+	DB_DRIVER = "postgres"
+	DB_SOURCE = "postgresql://root:secret@localhost:3000/simple_bank?sslmode=disable"
+)
+
 func TestMain(m *testing.M) {
-	config, err := util.LoadConfig("../..")
-	if err != nil {
-		log.Fatal("cannot cload config: ", err)
-	}
-	testDB, err = sql.Open(config.DBDriver, config.DBSource)
+	var err error
+	// config, err := util.LoadConfig("../..")
+	// if err != nil {
+	// 	log.Fatal("cannot cload config: ", err)
+	// }
+	testDB, err = sql.Open(DB_DRIVER, DB_DRIVER)
 	if err != nil {
 		log.Fatal("cannot connect to db: ", err)
 	}
