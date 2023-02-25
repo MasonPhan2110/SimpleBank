@@ -11,7 +11,7 @@ import (
 )
 
 func createRandomEntry(t *testing.T) Entry {
-	id := util.RandomInt(5, 15)
+	id := util.RandomInt(20, 30)
 	fmt.Println(">> ID: ", id)
 	arg := CreateEntryParams{
 		AccountID: id,
