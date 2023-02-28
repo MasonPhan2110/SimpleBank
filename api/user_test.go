@@ -10,9 +10,11 @@ import (
 	"net/http/httptest"
 	"reflect"
 	"testing"
+	"time"
 
 	mockdb "github.com/MasonPhan2110/SimpleBank/db/mock"
 	db "github.com/MasonPhan2110/SimpleBank/db/sqlc"
+	"github.com/MasonPhan2110/SimpleBank/token"
 	"github.com/MasonPhan2110/SimpleBank/util"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
@@ -25,12 +27,16 @@ func TestGetUser(t *testing.T) {
 	testCases := []struct {
 		name          string
 		user          string
+		setupAuth     func(t *testing.T, request *http.Request, tokenMaker token.Maker)
 		buildStubs    func(store *mockdb.MockStore)
 		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)
 	}{
 		{
 			name: "OK",
 			user: user.Username,
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetUser(gomock.Any(), gomock.Eq(user.Username)).Times(1).Return(user, nil)
 			},
@@ -42,6 +48,9 @@ func TestGetUser(t *testing.T) {
 		{
 			name: "InvalidData",
 			user: "@",
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetUser(gomock.Any(), gomock.Any()).Times(0)
 			},
@@ -52,6 +61,9 @@ func TestGetUser(t *testing.T) {
 		{
 			name: "NotFound",
 			user: user.Username,
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetUser(gomock.Any(), gomock.Eq(user.Username)).Times(1).Return(db.User{}, sql.ErrNoRows)
 			},
@@ -91,6 +103,8 @@ func TestGetUser(t *testing.T) {
 			url := fmt.Sprintf("/users/%s", tc.user)
 			request, err := http.NewRequest(http.MethodGet, url, nil)
 			require.NoError(t, err)
+
+			tc.setupAuth(t, request, server.tokenMaker)
 
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(t, recorder)
