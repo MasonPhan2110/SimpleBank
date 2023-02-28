@@ -84,7 +84,7 @@ func TestGetAccountAPI(t *testing.T) {
 
 			// start test server and send request
 
-			server := NewServer(store)
+			server := newTestServer(t, store)
 
 			recorder := httptest.NewRecorder()
 
@@ -179,7 +179,7 @@ func TestGetListAccountsAPI(t *testing.T) {
 
 			// start test server and send request
 
-			server := NewServer(store)
+			server := newTestServer(t, store)
 
 			recorder := httptest.NewRecorder()
 			url := "/accounts"
@@ -268,7 +268,7 @@ func TestCreateAccount(t *testing.T) {
 
 			// start test server and send request
 
-			server := NewServer(store)
+			server := newTestServer(t, store)
 
 			recorder := httptest.NewRecorder()
 			url := "/accounts"
