@@ -5,7 +5,7 @@ createdb:
 dropdb:
 	docker exec -it postgres14 dropdb simple_bank
 migrateup:
-	migrate -path db/migration -database "postgresql://root:secret@localhost:3000/simple_bank?sslmode=disable"  -verbose up
+	migrate -path db/migration -database "postgresql://root:e1fdFRekMRW1aYNrHZ0F@simple-bank.cenlrkxivm0u.ap-southeast-1.rds.amazonaws.com:5432/simple_bank"  -verbose up
 migrateup1:
 	migrate -path db/migration -database "postgresql://root:secret@localhost:3000/simple_bank?sslmode=disable"  -verbose up 1
 migratedown:
@@ -20,4 +20,6 @@ server:
 	go run main.go
 mock: 
 	mockgen -package mockdb -destination db/mock/store.go github.com/MasonPhan2110/SimpleBank/db/sqlc Store
-.PHONY: postgres createdb dropdb migrateup migratedown migrateup1 migratedown1 test server
+env:
+	aws secretsmanager get-secret-value --secret-id simple_bank --query SecretString --output text | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > .env
+.PHONY:env postgres createdb dropdb migrateup migratedown migrateup1 migratedown1 test server
